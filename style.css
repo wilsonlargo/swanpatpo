@@ -1,0 +1,161 @@
+.mod-ini{
+    width: auto;
+    height: 350px;
+    margin: 20px;
+    background-color: #f4ecf7;
+    color: #4a235a ;
+    padding: 5px;
+    border-radius: 3px;
+    border: gray solid 1px;
+}
+.sidebar {
+    margin: 0;
+    padding: 0;
+    width: 200px;
+    background-color: #f1f1f1;
+    position: fixed;
+    height: 100%;
+    overflow: auto;
+  }
+  
+  .sidebar a {
+    display: block;
+    color: black;
+    padding: 16px;
+    text-decoration: none;
+  }
+   
+
+  .sidebar a:hover:not(.active) {
+    background-color: #555;
+    color: white;
+  }
+  
+  div.content {
+    margin-left: 200px;
+    padding: 1px 16px;
+    height: 1000px;
+  }
+  
+  @media screen and (max-width: 700px) {
+    .sidebar {
+      width: 100%;
+      height: auto;
+      position: relative;
+    }
+    .sidebar a {float: left;}
+    div.content {margin-left: 0;}
+  }
+  
+  @media screen and (max-width: 400px) {
+    .sidebar a {
+      text-align: center;
+      float: none;
+    }
+  }
+
+
+  
+  .btn-label-gray{
+    background-color: #f4ecf7;
+    color: #4a235a ;
+    padding: 5px;
+    padding-left: 10px;
+    margin: 5px;
+    border-radius: 3px;
+    border: gray solid 1px;
+    width: fit-content;
+    height: 40px;
+}
+.btn-label-gray:hover{
+    background-color: #4a235a ;
+    color: white;
+}
+
+.btn-label-gray-long{
+  background-color: #f4ecf7;
+  color: #4a235a ;
+  padding: 5px;
+  padding-left: 10px;
+  margin: 5px;
+  border-radius: 3px;
+  border: gray solid 1px;
+  height: 40px;
+}
+.btn-label-gray-long:hover{
+  background-color: #4a235a ;
+  color: white;
+}
+
+.btn-mini-gray{
+  color: #4a235a ;
+  cursor: pointer;
+  height: 40px;
+}
+.btn-mini-gray:hover{
+  background-color: #4a235a ;
+  color: white;
+}
+
+
+.menu-group-scroll{
+  max-height: 200px;
+  margin-bottom: 10px;
+  overflow-y: auto; /* Show vertical scrollbar */ 
+  overflow-x:hidden
+}
+
+.item-menu{
+  cursor: pointer;
+  padding: 3px;
+}
+.item-menu:hover{
+  background-color: gray;
+  color: white;
+}
+
+.tabla-cell{
+  font-size: 9pt;
+}
+
+
+
+table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    overflow-y: auto;
+    height: 400px;
+    
+}
+
+
+
+.td-fitwidth {
+  width: 1px;
+  white-space: nowrap;
+}
+
+.td-fitwidth-scope {
+  font-size: 9pt;
+  white-space: nowrap;
+  width: 10px;
+}
+.td-fitwidth-scope:hover{
+  background-color: gray;
+  color: white;
+  cursor: pointer;
+}
+
+.btn-cell {
+  background-color: #f4ecf7;
+  color: #4a235a ;
+  padding: 5px;
+  border-radius: 3px;
+  border: gray solid 1px;
+  cursor: pointer;
+}
+
+.currSign:before {
+  content: '$';
+}
