@@ -195,3 +195,13 @@ table {
   font-weight: bold;
   cursor: pointer;
 }
+
+
+.bgimg {
+  background-image: url('./scr/imgfondo.jpg');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-size: cover;
+
+
+}
