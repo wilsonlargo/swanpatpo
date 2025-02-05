@@ -54,20 +54,20 @@ function _sele_escuela(proyecto) {
    
     const colectionproyectos=collection(db, proyecto)
     // 1.
-    async function getEscuela() {
-        const escuelas = [];
+    async function getProyecto() {
+        const proyectos = [];
         const querySnapshot = await getDocs(proyecto)
         querySnapshot.forEach((doc) => {
-            escuelas.push({
+            proyectos.push({
                 ...doc.data(),
                 id: doc.id,
             });
         });
-        return escuelas;
+        return proyectos;
     }
     // 2.
     // Función para obtener un proyecto por id
-    async function getVigencias(id) {
+    async function getProyectos(id) {
         const docRef = doc(db, proyecto, id);
         const docSnap = await getDoc(docRef);
 
@@ -78,26 +78,27 @@ function _sele_escuela(proyecto) {
     }
     //3.
     // Función para actualizar un proyecto
-    async function updateVigencia(vigencia) {
-        const docRef = doc(db, proyecto, vigencia.id);
-        await setDoc(docRef, vigencia);
+    async function updateProyecto(datos) {
+        const docRef = doc(db, proyecto, "TABLAS");
+        await setDoc(docRef, datos);
     }
 
     //4.
     // Escuchar si hay en un cambio en la coleccion de vigencias y actualizar automaticamente la lista de proyectos
     onSnapshot(colectionproyectos, (querySnapshot) => {
-        const escuelas = [];
+        const proyectos = [];
         querySnapshot.forEach((doc) => {
-            escuelas.push({
+            proyectos.push({
                 ...doc.data(),
                 id: doc.id,
             });
         });
-        GLOBAL.state.escuela = escuelas;
+        GLOBAL.state.proyectos = proyectos;
     });
     GLOBAL.firestore = {
-        getVigencias,
-        updateVigencia,
+        getProyectos,
+        getProyecto,
+        updateProyecto,
     }
 
 }

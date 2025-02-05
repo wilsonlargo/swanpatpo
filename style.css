@@ -54,7 +54,6 @@
     }
   }
 
-
   
   .btn-label-gray{
     background-color: #f4ecf7;
@@ -83,6 +82,22 @@
   height: 40px;
 }
 .btn-label-gray-long:hover{
+  background-color: #4a235a ;
+  color: white;
+}
+
+.btn-label-white-long{
+  background-color: white;
+  color: #4a235a ;
+  padding: 5px;
+  padding-left: 10px;
+  margin: 5px;
+  border-radius: 3px;
+  border: gray solid 1px;
+  height: 40px;
+  font-size: 12pt;
+}
+.btn-label-white-long:hover{
   background-color: #4a235a ;
   color: white;
 }
@@ -158,4 +173,25 @@ table {
 
 .currSign:before {
   content: '$';
+}
+
+.btn-label-escuela{
+  background-color: #f4ecf7;
+  color: #4a235a ;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin-top: 10px;
+  border-radius: 20px;
+  border: gray solid 1px;
+}
+
+.item-menu-escuela{
+  color: #4a235a ;
+}
+
+.item-menu-escuela:hover{
+  font-weight: bold;
+  cursor: pointer;
 }

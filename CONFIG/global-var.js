@@ -1,7 +1,7 @@
 const GLOBAL = {
     state: {
         //vigencia: null,
-        escuela: [],
+        proyectos: [],
     },
     firestore: {},
     admin: {}
