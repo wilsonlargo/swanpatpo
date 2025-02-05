@@ -57,9 +57,9 @@ function open_escuela() {
     const row_tool_establecimiento = newE("div", "label_sedes", "row btn-label-escuela")
     panel_escritorio.appendChild(row_tool_establecimiento)
 
-    const col_tit_sedes = newE("div", "col_tit_sedes", "col-md-3 fw-bold")
-    col_tit_sedes.textContent = "Establecimientos"
-    row_tool_establecimiento.appendChild(col_tit_sedes)
+    const col_tit_establec= newE("div", "col_tit_sedes", "col-md-3 fw-bold")
+    col_tit_establec.textContent = "Establecimientos"
+    row_tool_establecimiento.appendChild(col_tit_establec)
 
     const col_add_establecimiento = newE("div", "col_add_establecimiento", "col-md-3 item-menu-escuela")
     col_add_establecimiento.textContent = "Agregar establecimiento +"
@@ -93,14 +93,23 @@ function open_escuela() {
 
     }
 
+    const div_add_sedes = newE("div", "div_add_sedes", "menu-group-scroll")
+    panel_escritorio.appendChild(div_add_sedes)
+
+
     function _crear_establecimientos() {
         const data_establecimientos = global_proyecto["TABLAS"]["ESTABLECIMIENTOS"]
         div_add_establecimiento.innerHTML = ""
         for (id in data_establecimientos) {
             data_establecimientos[id]["id"] = id
+            let i=id
 
-            const btn_establecimiento = newE("div", "btn_establecimiento" + id, "row btn-label-white-long m-1")
+            const btn_establecimiento = newE("div", "btn_establecimiento" + id, "row btn-label-white-long")
             btn_establecimiento.style.cursor = "pointer"
+
+            btn_establecimiento.onclick=()=>{
+                _crear_sedes(data_establecimientos[i].nombre)
+            }
 
 
             const col_nombre = newE("div", "col_nombre" + id, "col-md-6")
@@ -135,7 +144,7 @@ function open_escuela() {
             div_estable.appendChild(int_nombre)
 
             int_nombre.value = data_establecimientos[id].nombre
-            let i=id
+
             int_nombre.onchange = () => {
                 data_establecimientos[i].nombre = int_nombre.value
                 col_nombre.textContent = int_nombre.value
@@ -154,6 +163,16 @@ function open_escuela() {
             }
         }
 
+    }
+    function _crear_sedes(ESTABLECIMIENTO){
+        div_add_sedes.innerHTML=""
+
+        const row_tool_sedes = newE("div", "label_sedes", "row btn-label-escuela ms-1 me-1")
+        div_add_sedes.appendChild(row_tool_sedes)
+    
+        const col_tit_sedes = newE("div", "col_tit_sedes", "col-md-3 fw-bold")
+        col_tit_sedes.textContent = "Sedes - " + ESTABLECIMIENTO
+        row_tool_sedes.appendChild(col_tit_sedes)
     }
 
 }

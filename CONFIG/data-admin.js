@@ -79,7 +79,7 @@ function _sele_escuela(proyecto) {
     //3.
     // Función para actualizar un proyecto
     async function updateProyecto(datos) {
-        const docRef = doc(db, proyecto, "TABLAS");
+        const docRef = doc(db, proyecto, datos.id);
         await setDoc(docRef, datos);
     }
 
