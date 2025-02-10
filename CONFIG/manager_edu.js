@@ -170,9 +170,15 @@ function open_escuela() {
         const row_tool_sedes = newE("div", "label_sedes", "row btn-label-escuela ms-1 me-1")
         div_add_sedes.appendChild(row_tool_sedes)
     
-        const col_tit_sedes = newE("div", "col_tit_sedes", "col-md-3 fw-bold")
+        const col_tit_sedes = newE("div", "col_tit_sedes", "col-md-4 fw-bold")
         col_tit_sedes.textContent = "Sedes - " + ESTABLECIMIENTO
         row_tool_sedes.appendChild(col_tit_sedes)
+
+        const col_add_sedes = newE("div", "col_add_sedes", "col-md-3 item-menu-escuela")
+        col_add_sedes.textContent = "Agregar sede +"
+        row_tool_sedes.appendChild(col_add_sedes)
+
+
     }
 
 }
