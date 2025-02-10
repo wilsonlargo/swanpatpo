@@ -102,7 +102,7 @@ function open_escuela() {
         div_add_establecimiento.innerHTML = ""
         for (id in data_establecimientos) {
             data_establecimientos[id]["id"] = id
-            let i=id
+            let i=id 
 
             const btn_establecimiento = newE("div", "btn_establecimiento" + id, "row btn-label-white-long")
             btn_establecimiento.style.cursor = "pointer"
