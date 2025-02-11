@@ -196,12 +196,20 @@ table {
   cursor: pointer;
 }
 
-
 .bgimg {
   background-image: url('./scr/imgfondo.jpg');
   background-repeat: no-repeat;
   background-attachment: fixed;
   background-size: cover;
+}
 
+.btn-menu_escuela{
+  background-color: #f4ecf7;
+  border-radius: 3px;
+  border: #f4ecf7 solid 1px;
+  padding: 5px;
+}
 
+.btn-menu_escuela:hover{
+  font-weight: bold;
 }
