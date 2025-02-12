@@ -341,8 +341,6 @@ function open_escuela() {
                     //Aquí conectamos con una de las tablas vigencia activa
                     //Debemos cargar los establecimientos y las sedes
                     administrar_vigencia(data.id,s)
-
-
                 }
                 const col_editar = newE("div", "col_editar_s" + id, "col-auto")
                 col_editar.style.width = "10px"
@@ -451,14 +449,19 @@ function administrar_vigencia(id_establecimiento,id_sede) {
     const conf_tablas=global_proyecto["TABLAS"]
 
     if (typeof global_proyecto["vigencias"][sel_vigencia.value]["consolidados"] != "undefined") {
-        const consolidados=global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
+        _crear_estudiantes_sede()
 
-        console.log(consolidados[id_establecimiento]["sedes"][id_sede])
+
         
     } else {
         global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]=global_proyecto["TABLAS"]["ESTABLECIMIENTOS"]
         const id_vigencia=global_proyecto["vigencias"][sel_vigencia.value].id
         Guardar_datos(id_vigencia, global_proyecto["vigencias"][sel_vigencia.value])
+    }
+
+    function _crear_estudiantes_sede(){
+        const consolidados=global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
+        console.log(consolidados[id_establecimiento]["sedes"][id_sede])
     }
 
 
