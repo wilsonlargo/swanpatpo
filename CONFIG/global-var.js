@@ -4,7 +4,8 @@ const GLOBAL = {
         proyectos: [],
     },
     firestore: {},
-    admin: {}
+    admin: {},
+    from_drive:[]
 };
 let activeEmail;
 function IniCredential() {

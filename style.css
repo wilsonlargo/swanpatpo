@@ -213,3 +213,15 @@ table {
 .btn-menu_escuela:hover{
   font-weight: bold;
 }
+
+.btn-menu_escuela-white{
+  background-color: white;
+
+  cursor: pointer;
+}
+.btn-menu_escuela-white:hover{
+  font-weight: bold;
+  border: gray solid 1px;
+  border-radius: 20px;
+  border: gray solid 1px;
+}

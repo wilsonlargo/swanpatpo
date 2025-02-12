@@ -10,6 +10,8 @@ function openIni(email) {
 let global_proyecto = {}
 
 function open_escuela() {
+    console.log(GLOBAL.from_drive)
+
     const proyecto = GLOBAL.state.proyectos
     let vigencias = []
     for (id in proyecto) {
@@ -132,12 +134,20 @@ function open_escuela() {
     const row_info_sede = newE("div", "row_info_sede", "row mt-2")
     panel_escritorio.appendChild(row_info_sede)
 
-    const col_nombre_establecimiento = newE("div", "col_nombre_establecimiento", "col-md-6")
+    const col_nombre_establecimiento = newE("div", "col_nombre_establecimiento", "col-md-4")
     row_info_sede.appendChild(col_nombre_establecimiento)
 
-    const col_nombre_sede = newE("div", "col_nombre_sedes", "col-md-6")
+    const col_nombre_sede = newE("div", "col_nombre_sedes", "col-md-3")
     col_nombre_sede.textContent = ""
     row_info_sede.appendChild(col_nombre_sede)
+
+    const col_add_estudiante = newE("div", "col_add_estudiante", "col-auto btn-menu_escuela-white")
+    col_add_estudiante.textContent = ""
+    row_info_sede.appendChild(col_add_estudiante)
+
+    const col_import_estudiante = newE("div", "col_import_estudiante", "col-auto btn-menu_escuela-white")
+    col_import_estudiante.textContent = ""
+    row_info_sede.appendChild(col_import_estudiante)
 
     const hr = newE("hr", "hr_titulo", "mt-2")
     panel_escritorio.appendChild(hr)
@@ -146,6 +156,7 @@ function open_escuela() {
     sel_vigencia.onchange = () => {
         byE("col_nombre_establecimiento").innerHTML = ""
         byE("col_nombre_sedes").innerHTML = ""
+        //by("div_estudiantes").innerHTML = ""
     }
 
     function _crear_menu_establecimiento() {
@@ -167,6 +178,9 @@ function open_escuela() {
                 <b>Establecimiento: </b> ${data_establecimientos[i].nombre_corto}
                 `
                 col_nombre_sede.innerHTML = ""
+                col_add_estudiante.innerHTML = ""
+                col_import_estudiante.innerHTML = ""
+                byE("div_estudiantes").innerHTML=""
                 _crear_menu_sedes(data_establecimientos[i])
             }
 
@@ -338,9 +352,12 @@ function open_escuela() {
                     col_nombre_sede.innerHTML = `
                     <b>Sede: </b> ${data_sedes[s].nombre_corto}
                     `
+                    col_add_estudiante.textContent="Agregar estudiante +"
+                    col_import_estudiante.textContent="Importar estudiantes..."
+
                     //Aquí conectamos con una de las tablas vigencia activa
                     //Debemos cargar los establecimientos y las sedes
-                    administrar_vigencia(data.id,s)
+                    administrar_vigencia(data.id, s)
                 }
                 const col_editar = newE("div", "col_editar_s" + id, "col-auto")
                 col_editar.style.width = "10px"
@@ -444,23 +461,54 @@ function open_escuela() {
             }
         }
     }
+    const div_estudiantes = newE("div", "div_estudiantes", "")
+    panel_escritorio.appendChild(div_estudiantes)
 }
-function administrar_vigencia(id_establecimiento,id_sede) {
-    const conf_tablas=global_proyecto["TABLAS"]
+function administrar_vigencia(id_establecimiento, id_sede) {
+    const conf_tablas = global_proyecto["TABLAS"]
 
     if (typeof global_proyecto["vigencias"][sel_vigencia.value]["consolidados"] != "undefined") {
         _crear_estudiantes_sede()
-
-
-        
     } else {
-        global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]=global_proyecto["TABLAS"]["ESTABLECIMIENTOS"]
-        const id_vigencia=global_proyecto["vigencias"][sel_vigencia.value].id
+        global_proyecto["vigencias"][sel_vigencia.value]["consolidados"] = global_proyecto["TABLAS"]["ESTABLECIMIENTOS"]
+        const id_vigencia = global_proyecto["vigencias"][sel_vigencia.value].id
         Guardar_datos(id_vigencia, global_proyecto["vigencias"][sel_vigencia.value])
     }
 
-    function _crear_estudiantes_sede(){
-        const consolidados=global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
+
+    function _crear_estudiantes_sede() {
+        div_estudiantes.innerHTML=""
+        const consolidados = global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
+        //Creamos una tabla de estudiantes
+        const tabla_estudiantes = newE("table", "data_tabla", "table table-hover mt-2")
+        div_estudiantes.appendChild(tabla_estudiantes)
+        const data_encabezados = newE("thead", "data_encabezados", "m-3")
+        tabla_estudiantes.appendChild(data_encabezados)
+
+        //Crear los encabezados dinámicamente
+        const fila_Encabezado = newE("tr", "fila_Encabezado", "mb-2 bg-secondary")
+        data_encabezados.appendChild(fila_Encabezado)
+
+        const lista_datos = [
+            "Nombres",
+            "Apellidos",
+            "Grado",
+        ]
+        const thscope_col = newE("th", "thscope_col", "td-fitwidth-scope bg-secondary")
+        thscope_col.scope = "col"
+        thscope_col.textContent = "#"
+        fila_Encabezado.appendChild(thscope_col)
+
+        lista_datos.forEach(campo => {
+            //if (campo[3] == true) {
+            const th = newE("th", "th" + campo, "td-fitwidth text-white")
+            th.textContent = campo
+            fila_Encabezado.appendChild(th)
+            //}
+        }
+        )
+
+
         console.log(consolidados[id_establecimiento]["sedes"][id_sede])
     }
 
