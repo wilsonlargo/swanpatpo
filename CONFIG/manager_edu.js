@@ -602,6 +602,24 @@ function administrar_vigencia(id_establecimiento, id_sede) {
         }
         )
 
+        const tbody_estudiantes = newE("tbody", "tbody_estudiantes", "mb-2 bg-secondary")
+        tabla_estudiantes.appendChild(tbody_estudiantes)
+        const sede = consolidados[id_establecimiento]["sedes"][id_sede]
+        sede['estudiantes'].forEach(est=>{
+            const tr = newE("tr", "tr" + est.id, "bg-white")
+            tbody_estudiantes.appendChild(tr)
+
+            const th_id = newE("th", "th" + est.id, "")
+            th_id.textContent=est.id
+            tr.appendChild(th_id)
+
+            const td_nombres = newE("td", "td_nombres" + est.id, "")
+            td_nombres.textContent=est.nombres
+            tr.appendChild(td_nombres)
+
+        })
+
+
 
     }
 
@@ -628,23 +646,38 @@ function administrar_vigencia(id_establecimiento, id_sede) {
             modal.show();
 
             btn.onclick = () => {
+                let e = 0
                 data_drive.forEach(dato => {
-                    const Nivel=cod_grados["N"+dato.GRADO_COD]
+                    const Nivel = cod_grados["N" + dato.GRADO_COD]
                     if (dato.CODIGO_DANE_SEDE == sede.dane) {
-                        
-                        console.log(dato.GRADO_COD)
 
                         const new_estudiante = {
+                            'id': e,
                             'grado_cod': `${dato.GRADO_COD}`,
-                            'nivel':'',
+                            'nivel': cod_grados[dato.GRADO_COD].nombre.replace(0,""),
                             'nombres': `${dato.NOMBRE1} ${dato.NOMBRE2}`,
                             'apellidos': `${dato.APELLIDO1} ${dato.APELLIDO2}`,
+                            'documento': `${dato.DOC}`,
+                            'tipo_documento': `${dato.TIPODOC}`,
+                            'genero': `${dato.GENERO}`,
+                            'genero': `${dato.FECHA_NACIMIENTO}`,
+                            'notas': {
+                                'periodo1': [],
+                                'periodo2': [],
+                                'periodo3': [],
+                                'periodo4': []
+                            },
+
+
                         }
+                        e++
                         sede.estudiantes.push(new_estudiante)
                     }
                 })
-
-                //console.log(sede.estudiantes[0])
+                global_proyecto["vigencias"][sel_vigencia.value]["consolidados"][id_establecimiento]["sedes"][id_sede] = sede
+                const id_vigencia = global_proyecto["vigencias"][sel_vigencia.value].id
+                Guardar_datos(id_vigencia, global_proyecto["vigencias"][sel_vigencia.value])
+                crear_lista_estudiantes()
             }
         }
 
@@ -665,6 +698,7 @@ function Guardar_datos(INDICE, DATA) {
             indx = i
         }
     }
+    console.log(DATA)
     GLOBAL.state.proyectos[indx] = DATA
     const id = GLOBAL.firestore.updateProyecto(GLOBAL.state.proyectos[indx])
 }

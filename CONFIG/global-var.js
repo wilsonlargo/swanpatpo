@@ -66,7 +66,7 @@ const cod_grados={
     "-1":{
         'nombre':'Primera infancia'
     },
-    "P":{
+    "0":{
         'nombre':'Prescolar'
     },
     "1":{

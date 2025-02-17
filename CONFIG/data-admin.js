@@ -74,7 +74,7 @@ function loadDataBase(id, hoja, query = "Select *") {
             const Objeto = [];
             for (const row of rows) {
                 const raw = (row.c)
-                const rowinfo = raw.map(dic => (dic && dic.v) ? dic.v : "No registra");
+                const rowinfo = raw.map(dic => (dic && dic.v) ? dic.v : 0);
                 const caso = Object.fromEntries(Keys.map((key, i) => [key, rowinfo[i]]));
                 Objeto.push(caso)
             }
