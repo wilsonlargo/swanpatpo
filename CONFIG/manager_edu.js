@@ -6,6 +6,16 @@ function openIni(email) {
     byE("btnRegistrarse").hidden = true
     console.clear()
 }
+const lista_datos_estudiante = [
+    ['grado_cod', "GRADO", true],
+    ['nivel', "NIVEL", true],
+    ['nombres', "NOMBRES", true],
+    ['apellidos', "APELLIDOS", true],
+    ['documento', "DOCUMENTO", true],
+    ['tipo_documento', "TIPO DOCUMENTO", true],
+    ['GENERO', "GENERO", true],
+    ['fnacimiento', "FECHA NACIMIENTO", true],
+]
 
 let global_proyecto = {}
 
@@ -569,6 +579,34 @@ function administrar_vigencia(id_establecimiento, id_sede) {
         Guardar_datos(id_vigencia, global_proyecto["vigencias"][sel_vigencia.value])
     }
 
+    byE("col_add_estudiante").onclick = () => {
+        const consolidados = global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
+        const sede = consolidados[id_establecimiento]["sedes"][id_sede]
+
+        const new_estudiante = {
+            'id': 0,
+            'grado_cod': "",
+            'nivel': "",
+            'nombres': "Nombres",
+            'apellidos': "Apellidos",
+            'documento': "Documento",
+            'tipo_documento': "00000",
+            'genero': "Sin determinar",
+            'fnacimiento': "00/00/0000",
+            'notas': {
+                'periodo1': [],
+                'periodo2': [],
+                'periodo3': [],
+                'periodo4': []
+            },
+        }
+        sede.push(new_estudiante)
+        global_proyecto["vigencias"][sel_vigencia.value]["consolidados"][id_establecimiento]["sedes"][id_sede] = sede
+        const id_vigencia = global_proyecto["vigencias"][sel_vigencia.value].id
+        Guardar_datos(id_vigencia, global_proyecto["vigencias"][sel_vigencia.value])
+        _crear_estudiantes_sede()
+
+    }
 
     function _crear_estudiantes_sede() {
         div_estudiantes.innerHTML = ""
@@ -583,39 +621,112 @@ function administrar_vigencia(id_establecimiento, id_sede) {
         const fila_Encabezado = newE("tr", "fila_Encabezado", "mb-2 bg-secondary")
         data_encabezados.appendChild(fila_Encabezado)
 
-        const lista_datos = [
-            "Nombres",
-            "Apellidos",
-            "Grado",
-        ]
+
         const thscope_col = newE("th", "thscope_col", "td-fitwidth-scope bg-secondary")
         thscope_col.scope = "col"
         thscope_col.textContent = "#"
         fila_Encabezado.appendChild(thscope_col)
 
-        lista_datos.forEach(campo => {
-            //if (campo[3] == true) {
-            const th = newE("th", "th" + campo, "td-fitwidth text-white")
-            th.textContent = campo
-            fila_Encabezado.appendChild(th)
-            //}
+        let h=0
+        lista_datos_estudiante.forEach(campo => {
+            if (campo[2] == true) {
+                const th = newE("th", "th" + campo[1], "tabla-cell td-fitwidth")
+                fila_Encabezado.appendChild(th)
+
+                const divHColumna = newE("div", "", "dropdown")
+                th.appendChild(divHColumna)
+
+                const btnHColumna = newE("button", "btnCampos" + h, "btn btn-secondary dropdown-toggle fw-bold")
+                btnHColumna.type = "button"
+                btnHColumna.style.fontSize = "9pt"
+                btnHColumna.setAttribute("data-bs-toggle", "dropdown");
+                btnHColumna.textContent = campo[1]
+                divHColumna.appendChild(btnHColumna)
+                h++
+                const consolidados = global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
+                const sede = consolidados[id_establecimiento]["sedes"][id_sede]             
+                divHColumna.appendChild(_put_filter_head(sede.estudiantes, campo[0]))
+            }
         }
         )
 
-        const tbody_estudiantes = newE("tbody", "tbody_estudiantes", "mb-2 bg-secondary")
+        function _put_filter_head(data_estudiantes, campo) {
+            const ulCampos = newE("ul", "ulCampos", "dropdown-menu shadow p-1")
+            ulCampos.style.width = "200px"
+
+
+            ulCampos.onclick = (e) => {
+                e.stopPropagation();
+            }
+
+            //Creamos listas por cada campo
+            let list_campo = []
+            let d=0
+            data_estudiantes.forEach(dato => {
+                if (list_campo.includes(dato[campo])==false){
+                    list_campo.push(dato[campo])
+                    const check = newE("div", "fc" + d, "form-check")
+                    check.style.fontSize = "9pt"
+                    ulCampos.appendChild(check)
+            
+                    const inCampo = newE("input", "inCampo" + d, "form-check-input")
+                    inCampo.type = "checkbox"
+                    inCampo.checked = true
+                    check.appendChild(inCampo)
+
+                    const label_campo = newE("label", "label_campo" + d, "form-check-label fw-normal")
+                    label_campo.for = "inCampo" + d
+                    label_campo.textContent = dato[campo]
+                    check.appendChild(label_campo)
+                }
+
+            })
+            return ulCampos
+        }
+
+        const tbody_estudiantes = newE("tbody", "tbody_estudiantes", "mb-2")
         tabla_estudiantes.appendChild(tbody_estudiantes)
         const sede = consolidados[id_establecimiento]["sedes"][id_sede]
-        sede['estudiantes'].forEach(est=>{
-            const tr = newE("tr", "tr" + est.id, "bg-white")
+        sede['estudiantes'].forEach(est => {
+            const tr = newE("tr", "tr" + est.id, "")
             tbody_estudiantes.appendChild(tr)
 
             const th_id = newE("th", "th" + est.id, "")
-            th_id.textContent=est.id
+            th_id.textContent = est.id
             tr.appendChild(th_id)
 
+            const td_grado = newE("td", "td_grado" + est.id, "")
+            td_grado.textContent = est.grado_cod
+            tr.appendChild(td_grado)
+
+            const td_nivel = newE("td", "td_nivel" + est.id, "")
+            td_nivel.textContent = est.nivel
+            tr.appendChild(td_nivel)
+
             const td_nombres = newE("td", "td_nombres" + est.id, "")
-            td_nombres.textContent=est.nombres
+            td_nombres.textContent = est.nombres
             tr.appendChild(td_nombres)
+
+            const td_apellidos = newE("td", "td_apellidos" + est.id, "")
+            td_apellidos.textContent = est.apellidos
+            tr.appendChild(td_apellidos)
+
+            const td_documento = newE("td", "td_documento" + est.id, "")
+            td_documento.textContent = est.documento
+            tr.appendChild(td_documento)
+
+            const td_tipodocumento = newE("td", "td_tipodocumento" + est.id, "")
+            td_tipodocumento.textContent = est.tipo_documento
+            tr.appendChild(td_tipodocumento)
+
+            const td_genero = newE("td", "td_genero" + est.id, "")
+            td_genero.textContent = est.genero
+            tr.appendChild(td_genero)
+
+            const td_fnacimiento = newE("td", "td_fnacimiento" + est.id, "")
+            td_fnacimiento.textContent = est.fnacimiento
+            tr.appendChild(td_fnacimiento)
+
 
         })
 
@@ -654,13 +765,13 @@ function administrar_vigencia(id_establecimiento, id_sede) {
                         const new_estudiante = {
                             'id': e,
                             'grado_cod': `${dato.GRADO_COD}`,
-                            'nivel': cod_grados[dato.GRADO_COD].nombre.replace(0,""),
+                            'nivel': cod_grados[dato.GRADO_COD].nombre.replace(0, ""),
                             'nombres': `${dato.NOMBRE1} ${dato.NOMBRE2}`,
                             'apellidos': `${dato.APELLIDO1} ${dato.APELLIDO2}`,
                             'documento': `${dato.DOC}`,
                             'tipo_documento': `${dato.TIPODOC}`,
                             'genero': `${dato.GENERO}`,
-                            'genero': `${dato.FECHA_NACIMIENTO}`,
+                            'fnacimiento': `${dato.FECHA_NACIMIENTO}`,
                             'notas': {
                                 'periodo1': [],
                                 'periodo2': [],
@@ -677,17 +788,10 @@ function administrar_vigencia(id_establecimiento, id_sede) {
                 global_proyecto["vigencias"][sel_vigencia.value]["consolidados"][id_establecimiento]["sedes"][id_sede] = sede
                 const id_vigencia = global_proyecto["vigencias"][sel_vigencia.value].id
                 Guardar_datos(id_vigencia, global_proyecto["vigencias"][sel_vigencia.value])
-                crear_lista_estudiantes()
+                _crear_estudiantes_sede()
             }
         }
-
     }
-
-
-
-
-
-
 }
 
 function Guardar_datos(INDICE, DATA) {
