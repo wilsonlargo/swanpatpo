@@ -6,34 +6,47 @@ function openIni(email) {
     byE("btnRegistrarse").hidden = true
     console.clear()
 }
-const lista_datos_estudiante = [
-    ['grado_cod', "GRADO", true],
-    ['nivel', "NIVEL", true],
-    ['nombres', "NOMBRES", true],
-    ['apellidos', "APELLIDOS", true],
-    ['documento', "DOCUMENTO", true],
-    ['tipo_documento', "TIPO DOCUMENTO", true],
-    ['GENERO', "GENERO", true],
-    ['fnacimiento', "FECHA NACIMIENTO", true],
+const lista_campos_estudiante = [
+    ['grado_cod', "GRADO", true, true],
+    ['nivel', "NIVEL", true, false],
+    ['nombres', "NOMBRES", true, false],
+    ['apellidos', "APELLIDOS", true, false],
+    ['documento', "DOCUMENTO", true, true],
+    ['tipo_documento', "TIPO DOCUMENTO", true, false],
+    ['genero', "GENERO", true, true],
+    ['fnacimiento', "FECHA NACIMIENTO", true, true],
 ]
 
+
+//Almacena la base de datos completa del proyecto seleccionado
 let global_proyecto = {}
 
+let filtro_tabla = {
+    "clase": "",
+    "campo": "",
+    "valores": []
+}
+
+//Variable que guarda temporalmente la base de datos estudiantes con o sin filtro
+let data_temp;
+
 function open_escuela() {
+    //Carga todos los proyectos en la base de datos firebase
     const proyecto = GLOBAL.state.proyectos
+    //Variable guarda todas la tablas relacionadas con vigencias
     let vigencias = []
     for (id in proyecto) {
-        if (proyecto[id].id == "PROYECTO") {
+        if (proyecto[id].id == "PROYECTO") { //Si el la tabla es proyecto, guarda la información propoa del proyecto
             global_proyecto["proyecto"] = proyecto[id].nombre
             byE("Nombre_proyecto").textContent = proyecto[id].nombre
-        } else if (proyecto[id].id.includes("V-") == true) {
+        } else if (proyecto[id].id.includes("V-") == true) {//Si es una vigencia, guardar las vigencias pertenecientes a un proyecto
             vigencias.push(proyecto[id])
-            //console.log(escuela[id])
-        } else if (proyecto[id].id == "TABLAS") {
+        } else if (proyecto[id].id == "TABLAS") {//Guardar todas las tablas del proyecto
             global_proyecto["TABLAS"] = proyecto[id]
         }
 
     }
+    //Actualiza todas la vigencias de un proyecto educatvio
     global_proyecto["vigencias"] = vigencias
 
 
@@ -71,6 +84,7 @@ function open_escuela() {
     li_menu_importar.appendChild(a_menu_importar)
 
     a_menu_importar.onclick = () => {
+        //Función para importar la información de establecimientos con sus sedes
         open_importar(byE("Nombre_proyecto").textContent)
     }
 
@@ -78,17 +92,15 @@ function open_escuela() {
     sm_vigencia.textContent = "Vigencia"
     col_vigencia.appendChild(sm_vigencia)
 
+    //Lista desplegable para vigencias
     const sel_vigencia = newE("select", "sel_vigencia", "form-control mb-2")
     col_vigencia.appendChild(sel_vigencia)
-
-    global_proyecto["vigencias"].forEach(vig => {
-
-    });
 
     for (ind in global_proyecto["vigencias"]) {
         const item = newE("option", "option" + ind)
         item.value = ind
         item.textContent = global_proyecto["vigencias"][ind].id
+        //Se agregan las vigencias a una lista desplegable
         sel_vigencia.appendChild(item)
     }
 
@@ -100,6 +112,7 @@ function open_escuela() {
     /////////////////////MENU ESTABLECIMIENTO
     ////////////////////////////////////////////////////////////////////////////
 
+    //Crea un menú desplegable para listas los establecimientos dentro de las tablas globales.
     const col_menu_establecimiento = newE("div", "col_menu_establecimiento", "col-md-3")
     row_tool_establecimiento.appendChild(col_menu_establecimiento)
 
@@ -119,8 +132,6 @@ function open_escuela() {
     const i__add_establecimiento = newE("i", "i__add_establecimiento", "bi bi-file-earmark-plus")
     btn__add_establecimiento.appendChild(i__add_establecimiento)
 
-
-
     menu_establecimiento.appendChild(btn__add_establecimiento)
     btn__add_establecimiento.onclick = () => {
         const new_establecimiento = {
@@ -135,18 +146,12 @@ function open_escuela() {
         _crear_menu_establecimiento()
     }
 
-
-
     const ul_establecimientos = newE("ul", "ul_establecimientos", "dropdown-menu shadow")
     ul_establecimientos.style.width = "300px"
     ul_establecimientos.onclick = (e) => {
         e.stopPropagation();
     }
     menu_establecimiento.appendChild(ul_establecimientos)
-
-
-
-
 
     //Leo la tabla de establecimientos y verifico si hay o no datos
 
@@ -160,10 +165,8 @@ function open_escuela() {
     }
 
     //En esta sección agregaremos información del establecimiento y de la escuela
-
     const div_admin_sedes = newE("div", "div_admin_sedes", "")
     panel_escritorio.appendChild(div_admin_sedes)
-
 
     const row_info_sede = newE("div", "row_info_sede", "row mt-2")
     panel_escritorio.appendChild(row_info_sede)
@@ -190,7 +193,6 @@ function open_escuela() {
     sel_vigencia.onchange = () => {
         byE("col_nombre_establecimiento").innerHTML = ""
         byE("col_nombre_sedes").innerHTML = ""
-        //by("div_estudiantes").innerHTML = ""
     }
 
     function _crear_menu_establecimiento() {
@@ -401,7 +403,6 @@ function open_escuela() {
                 col_nombre.textContent = data_sedes[id].nombre_corto
                 btn_sede.appendChild(col_nombre)
 
-
                 const i_editar = newE("i", "i_editar_s" + id, "bi bi-pencil-square")
                 i_editar.style.cursor = "pointer"
                 i_editar.setAttribute("data-bs-toggle", "collapse");
@@ -568,21 +569,309 @@ function open_escuela() {
     }
 
 }
+//Esta función administra toda la información en el momento de seleccionar una vigencia
 function administrar_vigencia(id_establecimiento, id_sede) {
-    const conf_tablas = global_proyecto["TABLAS"]
-
+    //Guarda la información de todos los establecimientos
+    const sede = global_proyecto["vigencias"][sel_vigencia.value]["consolidados"][id_establecimiento].sedes[id_sede]
+    //Verifica si hay o no una tabla consolidados, para agregar un atalba en blanco o usar la vigente.
+    //Crea una tabla en blanco con base a los establecimiento creados en TABLAS
     if (typeof global_proyecto["vigencias"][sel_vigencia.value]["consolidados"] != "undefined") {
         _crear_estudiantes_sede()
     } else {
+        //Si está vacio agragar las tablas actuales en esta vigencia
         global_proyecto["vigencias"][sel_vigencia.value]["consolidados"] = global_proyecto["TABLAS"]["ESTABLECIMIENTOS"]
         const id_vigencia = global_proyecto["vigencias"][sel_vigencia.value].id
         Guardar_datos(id_vigencia, global_proyecto["vigencias"][sel_vigencia.value])
+        _crear_estudiantes_sede()
     }
 
-    byE("col_add_estudiante").onclick = () => {
-        const consolidados = global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
-        const sede = consolidados[id_establecimiento]["sedes"][id_sede]
 
+    function _crear_estudiantes_sede() {
+        const formulario = newE("div", "formulario", "container")
+        //Limpio el contenedor de la tabla
+        div_estudiantes.innerHTML = ""
+
+        //Crear uan fila donde se coloca el control de lista de campos
+        /////////////CONTENEDOR MENUS Y BOTONES///////////////
+        const row1 = newE("div", "row1", "row bg-secondary ms-2 align-items-center")
+        div_estudiantes.appendChild(row1)
+        const col_Campos = newE("div", "col_Campos", "col-md-3")
+        row1.appendChild(col_Campos)
+        _make_menu_campos()
+
+        function _make_menu_campos() {
+            const divCampos = newE("div", "divCampos", "dropdown mb-2")
+            col_Campos.appendChild(divCampos)
+
+            const btnCampos = newE("button", "btnCampos", "btn btn-secondary dropdown-toggle")
+            btnCampos.type = "button"
+            btnCampos.setAttribute("data-bs-toggle", "dropdown");
+            btnCampos.textContent = "CAMPOS"
+            divCampos.appendChild(btnCampos)
+
+            const ulCampos = newE("ul", "ulCampos", "dropdown-menu p-2 shadow")
+            ulCampos.style.width = "200px"
+            divCampos.appendChild(ulCampos)
+
+            ulCampos.onclick = (e) => {
+                e.stopPropagation();
+            }
+
+            const crVer_todos = newE("div", "crVer_todos", "item-menu")
+            crVer_todos.textContent = "Ver todos"
+            crVer_todos.style.fontSize = "10pt"
+            ulCampos.appendChild(crVer_todos)
+
+            const crOcultar_todos = newE("div", "crOcultar_todos", "item-menu mb-2")
+            crOcultar_todos.textContent = "Ocultar todos"
+            crOcultar_todos.style.fontSize = "10pt"
+            ulCampos.appendChild(crOcultar_todos)
+
+            const ulLista_Campos = newE("ul", "ulLista_Campos", "list-group menu-group-scroll")
+            ulCampos.appendChild(ulLista_Campos)
+
+            for (i in lista_campos_estudiante) {
+                const li = newE("li", "li" + i, "list-group-item")
+                li.style.fontSize = "9pt"
+
+                const check = newE("div", "fc" + i, "form-check")
+                check.style.fontSize = "9pt"
+                ulLista_Campos.appendChild(check)
+
+                const inCampo = newE("input", "inCampo" + i, "form-check-input")
+                inCampo.type = "checkbox"
+                inCampo.checked = lista_campos_estudiante[i][2]
+                check.appendChild(inCampo)
+
+                const ind_campo = i
+                inCampo.onchange = () => {
+                    lista_campos_estudiante[ind_campo][2] = inCampo.checked
+                    _make_tabla(data_temp)
+                }
+
+                const label_campo = newE("label", "label_campo" + i, "form-check-label")
+                label_campo.for = "inCampo" + i
+                label_campo.textContent = lista_campos_estudiante[i][1]
+                check.appendChild(label_campo)
+            }
+
+            crOcultar_todos.onclick = () => {
+                for (i in lista_campos_estudiante) {
+                    lista_campos_estudiante[i][2] = false
+                    byE("inCampo" + i).checked = false
+                }
+                _make_tabla(data_temp)
+            }
+
+            crVer_todos.onclick = () => {
+                for (i in lista_campos_estudiante) {
+                    lista_campos_estudiante[i][2] = true
+                    byE("inCampo" + i).checked = true
+                }
+                _make_tabla(data_temp)
+            }
+            div_estudiantes.appendChild(formulario)
+        }
+        _make_tabla(sede)
+        function _make_tabla(data) {
+            formulario.innerHTML = ""
+            const data_tabla = newE("table", "data_tabla", "table table-hover mt-2")
+            formulario.appendChild(data_tabla)
+
+            const data_Encabezados = newE("thead", "data_Encabezados", "m-3")
+            data_tabla.appendChild(data_Encabezados)
+
+            //Crear los encabezados dinámicamente
+            const fila_Encabezado = newE("tr", "fila_Encabezado", "mb-2 bg-secondary")
+            data_Encabezados.appendChild(fila_Encabezado)
+
+            const thscope_col = newE("th", "thscope_col", "td-fitwidth-scope bg-secondary")
+            thscope_col.scope = "col"
+            thscope_col.textContent = "#"
+            fila_Encabezado.appendChild(thscope_col)
+
+            lista_campos_estudiante.forEach(campo => {
+                if (campo[2] == true) {
+                    const th = newE("th", "th" + campo[1], "tabla-cell td-fitwidth")
+
+                    const divHColumna = newE("div", "", "dropdown")
+                    th.appendChild(divHColumna)
+
+                    const btnHColumna = newE("button", "btnCampos", "btn btn-secondary dropdown-toggle fw-bold")
+                    btnHColumna.type = "button"
+                    btnHColumna.style.fontSize = "9pt"
+                    btnHColumna.setAttribute("data-bs-toggle", "dropdown");
+                    btnHColumna.textContent = campo[1]
+                    divHColumna.appendChild(btnHColumna)
+                    fila_Encabezado.appendChild(th)
+                    divHColumna.appendChild(_make_filter_head(campo))
+                }
+            }
+            )
+            
+            //Crear cuerpo de la tabla
+            const data_tbody = newE("tbody", "data_tbody", "mt-2")
+            data_tabla.appendChild(data_tbody)
+            let nEst = 0 //Inicia un contador por cada estudiante
+            data.estudiantes.forEach(est => { //Mira cada estudiante de la vigencia
+                const tr = newE("tr", "tr" + est.id, "") //Por cada caso crea una fila y la agrega a la tabla
+                data_tbody.appendChild(tr)
+
+                const th = newE("th", "", "td-fitwidth-scope") //Aquí está el numerador indice por caso
+                th.scope = "row"
+                th.textContent = est.id + 1
+                th.onmouseover = () => {
+                    //mensajes_tool("Abrir registro", "black")
+                }
+                th.onclick = () => { }
+                tr.appendChild(th)
+
+                //let nCol = 0 //Inicia el contador según la columna o campo 
+                lista_campos_estudiante.forEach(data_columna => { //Busca en la tabla de los campos
+                    if (data_columna[2] == true) { //Si el campo está visible true crear la columna
+                        const td = newE("td", "", "tabla-cell td-fitwidth")
+                        td.textContent = est[data_columna[0]]
+                        tr.appendChild(td)
+                    }
+                })
+                nEst++
+            })
+
+            function _make_filter_head(campo) {
+                const ulFiler_Head = newE("ul", "", "dropdown-menu p-2 shadow")
+                ulFiler_Head.style.width = "200px"
+                ulFiler_Head.onclick = (e) => {
+                    e.stopPropagation();
+                }
+
+                //Colocamos una opciòn de ver todos los registros de la lista
+                const crl_ClearFiltro = newE("div", "", "item-menu")
+                crl_ClearFiltro.textContent = "Ver todos"
+                crl_ClearFiltro.style.fontSize = "10pt"
+                ulFiler_Head.appendChild(crl_ClearFiltro)
+
+                const crl_AplyFiltro = newE("div", "", "item-menu")
+                crl_AplyFiltro.textContent = "Filtrar"
+                crl_AplyFiltro.style.fontSize = "10pt"
+                ulFiler_Head.appendChild(crl_AplyFiltro)
+                crl_AplyFiltro.onclick = () => {
+                    _filter_tabla(data)
+                }
+
+
+                //Filtra que elementos se ven en la lista
+                const int_Filtro_listas = newE("input", campo[0], "form-control")
+                int_Filtro_listas.type = "text"
+                int_Filtro_listas.autocomplete = "off"
+                int_Filtro_listas.style.fontSize = "10pt"
+                ulFiler_Head.appendChild(int_Filtro_listas)
+
+
+                const ulLista_datos = newE("ul", "", "list-group menu-group-scroll mt-2")
+                ulFiler_Head.appendChild(ulLista_datos)
+
+                //Limpiamso algún tipo de filtro actual
+                crl_ClearFiltro.onclick = () => {
+                    //_make_listados(clase, campo, "",numeric)
+                    filtro_tabla.valores = []
+                    filtro_tabla.campo = ""
+                    filtro_tabla.clase = ""
+                    _crear_estudiantes_sede()
+                }
+                _make_listados(campo[0], "", campo[3])
+
+                int_Filtro_listas.oninput = () => {
+                    _make_listados(campo[0], int_Filtro_listas.value, campo[3])
+                }
+
+
+                function _make_listados(campoA, filtroA, numero) {
+                    ulLista_datos.innerHTML = ""
+                    //Determina si el elemento pertencese o no a una clase superior de lso datos
+                    //Creamos un alisata de "ùnicos" que se mostrará en el menú
+                    let listasTemp = []
+                    let listas = []
+                    data.estudiantes.forEach(est => {
+                        if (listasTemp.includes(est[campoA]) != true) {
+                            listasTemp.push(est[campoA])
+                        }
+                    })
+                    let i = 0
+
+                    //Mira si el listado a mostrar está filtrado
+                    if (filtroA !== "") {
+                        if (numero == true) {
+                            const filtered = listasTemp.filter(ele => ele == (filtroA))
+                            listas = filtered
+                        } else {
+                            const filtered = listasTemp.filter(ele => ele.includes(filtroA))
+                            listas = filtered
+                        }
+
+                    } else {
+                        listas = listasTemp
+                    }
+
+                    //Tomamso al lista de únicos y los mostramso en formato de check
+                    listas.forEach(ele => {
+                        const checkE = newE("div", "fcE" + i, "form-check")
+                        checkE.style.fontSize = "9pt"
+                        ulLista_datos.appendChild(checkE)
+
+                        const inCampoE = newE("input", "inCampoE" + i, "form-check-input")
+                        inCampoE.type = "checkbox"
+                        inCampoE.checked = false
+                        inCampoE.value = ele
+                        checkE.appendChild(inCampoE)
+
+                        inCampoE.onchange = () => {
+                            if (inCampoE.checked == true) {
+                                filtro_tabla.valores.push(inCampoE.value)
+                                filtro_tabla.campo = campo[0]
+                                //filtro_tabla.clase = clase
+                            } else {
+                                const filtered = filtro_tabla.valores.filter(ele => ele !== inCampoE.value)
+                                filtro_tabla.valores = filtered
+                                filtro_tabla.campo = campo[0]
+                                //filtro_tabla.clase = clase
+                            }
+                        }
+                        const label_campoE = newE("label", "label_campoE" + i, "form-check-label fw-normal")
+                        label_campoE.for = "inCampoE" + i
+                        label_campoE.textContent = ele
+                        checkE.appendChild(label_campoE)
+                        i++
+
+                    })
+                }
+                return ulFiler_Head
+            }
+        }
+        function _filter_tabla(data) {
+            const data_ini = data_temp
+            //Creamos las cadenas para el filtro
+            let cadena = ""
+            filtro_tabla.valores.forEach(item => {
+                cadena = cadena + `ele['${filtro_tabla.campo}']=='${item}' || `
+            })
+            const Criterio_clear = cadena.slice(0, -4)
+            const filtered = data.estudiantes.filter(ele => eval(Criterio_clear))
+            let data_fin = {
+                "estudiantes": filtered
+            };
+            data_temp = data_fin
+            _make_tabla(data_temp)
+
+
+        }
+    }
+
+
+    //Referenciamos el botón para crear un estudiante nuevo.
+    byE("col_add_estudiante").onclick = () => {
+        //Esta sede se obtiene de la losta de establecimientos y del id de sede
+        const consolidados=global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
+        const sede = consolidados[id_establecimiento]["sedes"][id_sede]
         const new_estudiante = {
             'id': 0,
             'grado_cod': "",
@@ -600,143 +889,18 @@ function administrar_vigencia(id_establecimiento, id_sede) {
                 'periodo4': []
             },
         }
-        sede.push(new_estudiante)
+        sede.estudiantes.push(new_estudiante)
         global_proyecto["vigencias"][sel_vigencia.value]["consolidados"][id_establecimiento]["sedes"][id_sede] = sede
         const id_vigencia = global_proyecto["vigencias"][sel_vigencia.value].id
         Guardar_datos(id_vigencia, global_proyecto["vigencias"][sel_vigencia.value])
+        data_filter_estudiantes = consolidados[id_establecimiento]["sedes"][id_sede]
         _crear_estudiantes_sede()
-
-    }
-
-    function _crear_estudiantes_sede() {
-        div_estudiantes.innerHTML = ""
-        const consolidados = global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
-        //Creamos una tabla de estudiantes
-        const tabla_estudiantes = newE("table", "data_tabla", "table table-hover mt-2")
-        div_estudiantes.appendChild(tabla_estudiantes)
-        const data_encabezados = newE("thead", "data_encabezados", "m-3")
-        tabla_estudiantes.appendChild(data_encabezados)
-
-        //Crear los encabezados dinámicamente
-        const fila_Encabezado = newE("tr", "fila_Encabezado", "mb-2 bg-secondary")
-        data_encabezados.appendChild(fila_Encabezado)
-
-
-        const thscope_col = newE("th", "thscope_col", "td-fitwidth-scope bg-secondary")
-        thscope_col.scope = "col"
-        thscope_col.textContent = "#"
-        fila_Encabezado.appendChild(thscope_col)
-
-        let h=0
-        lista_datos_estudiante.forEach(campo => {
-            if (campo[2] == true) {
-                const th = newE("th", "th" + campo[1], "tabla-cell td-fitwidth")
-                fila_Encabezado.appendChild(th)
-
-                const divHColumna = newE("div", "", "dropdown")
-                th.appendChild(divHColumna)
-
-                const btnHColumna = newE("button", "btnCampos" + h, "btn btn-secondary dropdown-toggle fw-bold")
-                btnHColumna.type = "button"
-                btnHColumna.style.fontSize = "9pt"
-                btnHColumna.setAttribute("data-bs-toggle", "dropdown");
-                btnHColumna.textContent = campo[1]
-                divHColumna.appendChild(btnHColumna)
-                h++
-                const consolidados = global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
-                const sede = consolidados[id_establecimiento]["sedes"][id_sede]             
-                divHColumna.appendChild(_put_filter_head(sede.estudiantes, campo[0]))
-            }
-        }
-        )
-
-        function _put_filter_head(data_estudiantes, campo) {
-            const ulCampos = newE("ul", "ulCampos", "dropdown-menu shadow p-1")
-            ulCampos.style.width = "200px"
-
-
-            ulCampos.onclick = (e) => {
-                e.stopPropagation();
-            }
-
-            //Creamos listas por cada campo
-            let list_campo = []
-            let d=0
-            data_estudiantes.forEach(dato => {
-                if (list_campo.includes(dato[campo])==false){
-                    list_campo.push(dato[campo])
-                    const check = newE("div", "fc" + d, "form-check")
-                    check.style.fontSize = "9pt"
-                    ulCampos.appendChild(check)
-            
-                    const inCampo = newE("input", "inCampo" + d, "form-check-input")
-                    inCampo.type = "checkbox"
-                    inCampo.checked = true
-                    check.appendChild(inCampo)
-
-                    const label_campo = newE("label", "label_campo" + d, "form-check-label fw-normal")
-                    label_campo.for = "inCampo" + d
-                    label_campo.textContent = dato[campo]
-                    check.appendChild(label_campo)
-                }
-
-            })
-            return ulCampos
-        }
-
-        const tbody_estudiantes = newE("tbody", "tbody_estudiantes", "mb-2")
-        tabla_estudiantes.appendChild(tbody_estudiantes)
-        const sede = consolidados[id_establecimiento]["sedes"][id_sede]
-        sede['estudiantes'].forEach(est => {
-            const tr = newE("tr", "tr" + est.id, "")
-            tbody_estudiantes.appendChild(tr)
-
-            const th_id = newE("th", "th" + est.id, "")
-            th_id.textContent = est.id
-            tr.appendChild(th_id)
-
-            const td_grado = newE("td", "td_grado" + est.id, "")
-            td_grado.textContent = est.grado_cod
-            tr.appendChild(td_grado)
-
-            const td_nivel = newE("td", "td_nivel" + est.id, "")
-            td_nivel.textContent = est.nivel
-            tr.appendChild(td_nivel)
-
-            const td_nombres = newE("td", "td_nombres" + est.id, "")
-            td_nombres.textContent = est.nombres
-            tr.appendChild(td_nombres)
-
-            const td_apellidos = newE("td", "td_apellidos" + est.id, "")
-            td_apellidos.textContent = est.apellidos
-            tr.appendChild(td_apellidos)
-
-            const td_documento = newE("td", "td_documento" + est.id, "")
-            td_documento.textContent = est.documento
-            tr.appendChild(td_documento)
-
-            const td_tipodocumento = newE("td", "td_tipodocumento" + est.id, "")
-            td_tipodocumento.textContent = est.tipo_documento
-            tr.appendChild(td_tipodocumento)
-
-            const td_genero = newE("td", "td_genero" + est.id, "")
-            td_genero.textContent = est.genero
-            tr.appendChild(td_genero)
-
-            const td_fnacimiento = newE("td", "td_fnacimiento" + est.id, "")
-            td_fnacimiento.textContent = est.fnacimiento
-            tr.appendChild(td_fnacimiento)
-
-
-        })
-
-
 
     }
 
     const btn_importar_estudiante = byE("col_import_estudiante")
     btn_importar_estudiante.onclick = () => {
-        const consolidados = global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
+        const consolidados=global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
         const sede = consolidados[id_establecimiento]["sedes"][id_sede]
         _importar_estudiantes()
 
@@ -778,14 +942,13 @@ function administrar_vigencia(id_establecimiento, id_sede) {
                                 'periodo3': [],
                                 'periodo4': []
                             },
-
-
                         }
                         e++
                         sede.estudiantes.push(new_estudiante)
                     }
                 })
                 global_proyecto["vigencias"][sel_vigencia.value]["consolidados"][id_establecimiento]["sedes"][id_sede] = sede
+                data_filter_sede = sede
                 const id_vigencia = global_proyecto["vigencias"][sel_vigencia.value].id
                 Guardar_datos(id_vigencia, global_proyecto["vigencias"][sel_vigencia.value])
                 _crear_estudiantes_sede()
@@ -802,7 +965,6 @@ function Guardar_datos(INDICE, DATA) {
             indx = i
         }
     }
-    console.log(DATA)
     GLOBAL.state.proyectos[indx] = DATA
     const id = GLOBAL.firestore.updateProyecto(GLOBAL.state.proyectos[indx])
 }
