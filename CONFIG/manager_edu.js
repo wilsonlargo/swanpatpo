@@ -16,6 +16,40 @@ const lista_campos_estudiante = [
     ['genero', "GENERO", true, true],
     ['fnacimiento', "FECHA NACIMIENTO", true, true],
 ]
+const template_modelo = {
+    'modelo-nombre': 'Nombre del modelo',
+    'modelo-tipo': 'Tipo de modelo',
+    'modelo-descripcion': 'Descripción del modelo',
+    'horizonte-social': 'Horizonte Social/Misión',
+    'horizonte-gestion': 'Horizonte de Gestion/Visión',
+    'ejes': [
+
+    ],
+    'sistema-evaluacion': {
+        'tipo': "Tipo",
+        'escalas': [
+
+        ]
+    }
+
+}
+const template_eje = {
+    'nombre-eje': "Nombre del eje",
+    'abr-eje': "Nombre corto del eje",
+    'definicion': "Definición general",
+    'objetivos': [],
+    'indicadores': [],
+    'areas': []
+}
+
+const template_area = {
+    'nombre-area': "Nombre del área",
+    'abr-area': "Nombre del área",
+    'macro-eje': "Nombre del eje general",
+    'definicion': "Definición general",
+    'objetivos': [],
+    'indicadores': []
+}
 
 
 //Almacena la base de datos completa del proyecto seleccionado
@@ -44,11 +78,9 @@ function open_escuela() {
         } else if (proyecto[id].id == "TABLAS") {//Guardar todas las tablas del proyecto
             global_proyecto["TABLAS"] = proyecto[id]
         }
-
     }
     //Actualiza todas la vigencias de un proyecto educatvio
     global_proyecto["vigencias"] = vigencias
-
 
     //Crear un selector de vigencias
     const panel_escritorio = byE("panel_escritorio")
@@ -57,56 +89,60 @@ function open_escuela() {
     const row_tools = newE("div", "row_tools", "row align-items-center p-1 bg-secondary")
     panel_escritorio.appendChild(row_tools)
 
-    const col_vigencia = newE("div", "col_vigencia", "col-md-6")
-    row_tools.appendChild(col_vigencia)
+    _crear_sel_vigencia()
+    function _crear_sel_vigencia() {
+        const col_vigencia = newE("div", "col_vigencia", "col-md-3")
+        row_tools.appendChild(col_vigencia)
+        const sm_vigencia = newE("small", "sm_vigencia", "fw-bold text-white")
+        sm_vigencia.textContent = "Vigencia"
+        col_vigencia.appendChild(sm_vigencia)
 
-    const col_menu_config = newE("div", "col_vigencia", "col-md-6 text-end")
-    row_tools.appendChild(col_menu_config)
+        //Lista desplegable para vigencias
+        const sel_vigencia = newE("select", "sel_vigencia", "form-control mb-2")
+        col_vigencia.appendChild(sel_vigencia)
 
-    const menu_config = newE("div", "menu_config", "nav-item dropdown")
-    col_menu_config.appendChild(menu_config)
-
-    const a_menu_config = newE("a", "a_menu_config", "nav-link dropdown-toggle text-white")
-    a_menu_config.textContent = "Herramientas"
-    a_menu_config.href = "#"
-    a_menu_config.setAttribute("data-bs-toggle", "dropdown")
-    menu_config.appendChild(a_menu_config)
-
-    const ul_menu_config = newE("div", "ul_menu_config", "dropdown-menu shadow")
-    menu_config.appendChild(ul_menu_config)
-
-    const li_menu_importar = newE("li", "li_menu_importar", "")
-    ul_menu_config.appendChild(li_menu_importar)
-
-    const a_menu_importar = newE("a", "a_menu_importar", "dropdown-item")
-    a_menu_importar.textContent = "Importar establecimientos"
-    a_menu_importar.href = "#"
-    li_menu_importar.appendChild(a_menu_importar)
-
-    a_menu_importar.onclick = () => {
-        //Función para importar la información de establecimientos con sus sedes
-        open_importar(byE("Nombre_proyecto").textContent)
+        for (ind in global_proyecto["vigencias"]) {
+            const item = newE("option", "option" + ind)
+            item.value = ind
+            item.textContent = global_proyecto["vigencias"][ind].id
+            //Se agregan las vigencias a una lista desplegable
+            sel_vigencia.appendChild(item)
+        }
     }
 
-    const sm_vigencia = newE("small", "sm_vigencia", "fw-bold text-white")
-    sm_vigencia.textContent = "Vigencia"
-    col_vigencia.appendChild(sm_vigencia)
+    _crear_menu_config()
+    function _crear_menu_config() {
+        const col_menu_config = newE("div", "col_vigencia", "col-md-3 text-end")
+        row_tools.appendChild(col_menu_config)
 
-    //Lista desplegable para vigencias
-    const sel_vigencia = newE("select", "sel_vigencia", "form-control mb-2")
-    col_vigencia.appendChild(sel_vigencia)
+        const menu_config = newE("div", "menu_config", "nav-item dropdown")
+        col_menu_config.appendChild(menu_config)
 
-    for (ind in global_proyecto["vigencias"]) {
-        const item = newE("option", "option" + ind)
-        item.value = ind
-        item.textContent = global_proyecto["vigencias"][ind].id
-        //Se agregan las vigencias a una lista desplegable
-        sel_vigencia.appendChild(item)
+        const a_menu_config = newE("a", "a_menu_config", "nav-link dropdown-toggle text-white")
+        a_menu_config.textContent = "Herramientas"
+        a_menu_config.href = "#"
+        a_menu_config.setAttribute("data-bs-toggle", "dropdown")
+        menu_config.appendChild(a_menu_config)
+
+        const ul_menu_config = newE("div", "ul_menu_config", "dropdown-menu shadow")
+        menu_config.appendChild(ul_menu_config)
+
+        const li_menu_importar = newE("li", "li_menu_importar", "")
+        ul_menu_config.appendChild(li_menu_importar)
+
+        const a_menu_importar = newE("a", "a_menu_importar", "dropdown-item")
+        a_menu_importar.textContent = "Importar establecimientos"
+        a_menu_importar.href = "#"
+        li_menu_importar.appendChild(a_menu_importar)
+
+        a_menu_importar.onclick = () => {
+            //Función para importar la información de establecimientos con sus sedes
+            open_importar(byE("Nombre_proyecto").textContent)
+        }
     }
 
-    const row_tool_establecimiento = newE("div", "label_sedes", "row btn-label-escuela")
-    panel_escritorio.appendChild(row_tool_establecimiento)
-
+    //const row_tool_establecimiento = newE("div", "label_sedes", "row btn-label-escuela")
+    //panel_escritorio.appendChild(row_tool_establecimiento)
 
     /////////////////////////////////////////////////////////////////////////////
     /////////////////////MENU ESTABLECIMIENTO
@@ -114,7 +150,7 @@ function open_escuela() {
 
     //Crea un menú desplegable para listas los establecimientos dentro de las tablas globales.
     const col_menu_establecimiento = newE("div", "col_menu_establecimiento", "col-md-3")
-    row_tool_establecimiento.appendChild(col_menu_establecimiento)
+    row_tools.appendChild(col_menu_establecimiento)
 
     const menu_establecimiento = newE("div", "menu_establecimiento", "dropdown")
     col_menu_establecimiento.appendChild(menu_establecimiento)
@@ -308,7 +344,7 @@ function open_escuela() {
             }
 
 
-            const btn_delete = newE("button", "", "btn btn-secondary mt-2")
+            const btn_delete = newE("button", "btn_delete" + id, "btn btn-secondary mt-2")
             btn_delete.type = "button"
             btn_delete.textContent = "Suprimir elemento"
             div_estable.appendChild(btn_delete)
@@ -319,13 +355,12 @@ function open_escuela() {
                 _crear_menu_establecimiento()
             }
         }
-
     }
 
     //Esta sección se encarga de estructurar las escuelas dentro de un centro o establecimiento
     //////////////////////////////////////////////////////////////////////////////7
     const col_menu_sedes = newE("div", "col_menu_establecimiento", "col-md-3")
-    row_tool_establecimiento.appendChild(col_menu_sedes)
+    row_tools.appendChild(col_menu_sedes)
     function _crear_menu_sedes(data) {
         col_menu_sedes.innerHTML = ""
 
@@ -558,8 +593,6 @@ function open_escuela() {
             }
             global_proyecto["TABLAS"]["ESTABLECIMIENTOS"] = data_etablecimientos
 
-
-
             global_proyecto["vigencias"][sel_vigencia.value] = []
             const id_vigencia = global_proyecto["vigencias"][sel_vigencia.value].id
             Guardar_datos(id_vigencia, global_proyecto["vigencias"][sel_vigencia.value])
@@ -567,7 +600,10 @@ function open_escuela() {
             _crear_menu_establecimiento()
         }
     }
-
+    /////////////////////////////////////////////////
+    byE("btn_modelo").onclick = () => {
+        open_modelo(global_proyecto["TABLAS"])
+    }
 }
 //Esta función administra toda la información en el momento de seleccionar una vigencia
 function administrar_vigencia(id_establecimiento, id_sede) {
@@ -694,7 +730,7 @@ function administrar_vigencia(id_establecimiento, id_sede) {
                 if (campo[2] == true) {
                     const th = newE("th", "th" + campo[1], "tabla-cell td-fitwidth")
 
-                    const divHColumna = newE("div", "", "dropdown")
+                    const divHColumna = newE("div", "divHColumna" + campo[0], "dropdown")
                     th.appendChild(divHColumna)
 
                     const btnHColumna = newE("button", "btnCampos", "btn btn-secondary dropdown-toggle fw-bold")
@@ -708,7 +744,7 @@ function administrar_vigencia(id_establecimiento, id_sede) {
                 }
             }
             )
-            
+
             //Crear cuerpo de la tabla
             const data_tbody = newE("tbody", "data_tbody", "mt-2")
             data_tabla.appendChild(data_tbody)
@@ -717,7 +753,7 @@ function administrar_vigencia(id_establecimiento, id_sede) {
                 const tr = newE("tr", "tr" + est.id, "") //Por cada caso crea una fila y la agrega a la tabla
                 data_tbody.appendChild(tr)
 
-                const th = newE("th", "", "td-fitwidth-scope") //Aquí está el numerador indice por caso
+                const th = newE("th", "th" + nEst, "td-fitwidth-scope") //Aquí está el numerador indice por caso
                 th.scope = "row"
                 th.textContent = est.id + 1
                 th.onmouseover = () => {
@@ -729,7 +765,7 @@ function administrar_vigencia(id_establecimiento, id_sede) {
                 //let nCol = 0 //Inicia el contador según la columna o campo 
                 lista_campos_estudiante.forEach(data_columna => { //Busca en la tabla de los campos
                     if (data_columna[2] == true) { //Si el campo está visible true crear la columna
-                        const td = newE("td", "", "tabla-cell td-fitwidth")
+                        const td = newE("td", "td" + nEst + est.id, "tabla-cell td-fitwidth")
                         td.textContent = est[data_columna[0]]
                         tr.appendChild(td)
                     }
@@ -738,19 +774,19 @@ function administrar_vigencia(id_establecimiento, id_sede) {
             })
 
             function _make_filter_head(campo) {
-                const ulFiler_Head = newE("ul", "", "dropdown-menu p-2 shadow")
+                const ulFiler_Head = newE("ul", "ulFiler_Head" + campo[0], "dropdown-menu p-2 shadow")
                 ulFiler_Head.style.width = "200px"
                 ulFiler_Head.onclick = (e) => {
                     e.stopPropagation();
                 }
 
                 //Colocamos una opciòn de ver todos los registros de la lista
-                const crl_ClearFiltro = newE("div", "", "item-menu")
+                const crl_ClearFiltro = newE("div", "crl_ClearFiltro" + campo[0], "item-menu")
                 crl_ClearFiltro.textContent = "Ver todos"
                 crl_ClearFiltro.style.fontSize = "10pt"
                 ulFiler_Head.appendChild(crl_ClearFiltro)
 
-                const crl_AplyFiltro = newE("div", "", "item-menu")
+                const crl_AplyFiltro = newE("div", "crl_AplyFiltro" + campo[0], "item-menu")
                 crl_AplyFiltro.textContent = "Filtrar"
                 crl_AplyFiltro.style.fontSize = "10pt"
                 ulFiler_Head.appendChild(crl_AplyFiltro)
@@ -767,7 +803,7 @@ function administrar_vigencia(id_establecimiento, id_sede) {
                 ulFiler_Head.appendChild(int_Filtro_listas)
 
 
-                const ulLista_datos = newE("ul", "", "list-group menu-group-scroll mt-2")
+                const ulLista_datos = newE("ul", "ulLista_datos" + campo[0], "list-group menu-group-scroll mt-2")
                 ulFiler_Head.appendChild(ulLista_datos)
 
                 //Limpiamso algún tipo de filtro actual
@@ -870,7 +906,7 @@ function administrar_vigencia(id_establecimiento, id_sede) {
     //Referenciamos el botón para crear un estudiante nuevo.
     byE("col_add_estudiante").onclick = () => {
         //Esta sede se obtiene de la losta de establecimientos y del id de sede
-        const consolidados=global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
+        const consolidados = global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
         const sede = consolidados[id_establecimiento]["sedes"][id_sede]
         const new_estudiante = {
             'id': 0,
@@ -900,7 +936,7 @@ function administrar_vigencia(id_establecimiento, id_sede) {
 
     const btn_importar_estudiante = byE("col_import_estudiante")
     btn_importar_estudiante.onclick = () => {
-        const consolidados=global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
+        const consolidados = global_proyecto["vigencias"][sel_vigencia.value]["consolidados"]
         const sede = consolidados[id_establecimiento]["sedes"][id_sede]
         _importar_estudiantes()
 
@@ -956,6 +992,52 @@ function administrar_vigencia(id_establecimiento, id_sede) {
         }
     }
 }
+
+function open_modelo(data) {
+    panel_escritorio.innerHTML = ""
+    if (typeof data["MODELO"] != "undefined") {
+        _make_formulario_modelo()
+    } else {
+        data["MODELO"] = template_modelo
+        data["MODELO"].ejes.push(template_eje)
+        data["MODELO"].ejes[0].areas.push(template_area)
+        console.log(global_proyecto["TABLAS"]["MODELO"])
+        _make_formulario_modelo()
+    }
+    function _make_formulario_modelo() {
+        const modelo = data["MODELO"]
+        const sm_nombre = newE("small", "sm_nombre", "fw-bold")
+        sm_nombre.textContent = "Nombre del modelo educativo"
+        panel_escritorio.appendChild(sm_nombre)
+
+        const int_nombre = newE("input", "int_nombre", "form-control")
+        int_nombre.type="text"
+        panel_escritorio.appendChild(int_nombre)
+
+        int_nombre.value=modelo["modelo-nombre"]
+        int_nombre.onchange=()=>{
+            modelo["modelo-nombre"]=int_nombre.value
+            global_proyecto["TABLAS"]["MODELO"]=modelo
+            Guardar_datos("TABLAS", global_proyecto["TABLAS"])
+        }
+
+        const sm_tipo = newE("small", "sm_tipo", "fw-bold")
+        sm_tipo.textContent = "Tipo de modelo"
+        panel_escritorio.appendChild(sm_tipo)
+
+        const int_tipo = newE("input", "int_tipo", "form-control")
+        int_tipo.type="text"
+        panel_escritorio.appendChild(int_tipo)
+
+        int_tipo.value=modelo["modelo-nombre"]
+        int_tipo.onchange=()=>{
+            modelo["modelo-tipo"]=int_tipo.value
+            global_proyecto["TABLAS"]["MODELO"]=modelo
+            Guardar_datos("TABLAS", global_proyecto["TABLAS"])
+        }
+    }
+}
+
 
 function Guardar_datos(INDICE, DATA) {
     const data_base = GLOBAL.state.proyectos
